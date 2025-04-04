@@ -26,7 +26,7 @@ app.get("/", async(req, res)=>{
 
 app.get("/api/download/:fileName", async(req, res)=>{
     try {
-        let url = path.join(__dirname, "tmp", req.params.fileName)
+        let url = path.join(__dirname, "./reportes", req.params.fileName)
         console.log("todo correcto")
         res.status(200).download(url)
         
