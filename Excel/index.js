@@ -1,6 +1,6 @@
 import express from 'express';
 import Excel from "./create-excel/excel.js"
-import fs from "fs";
+import fs, { copyFileSync } from "fs";
 import path from "path";
 import {fileURLToPath } from "url";
 
@@ -41,13 +41,15 @@ app.post("/api/create-excel", async (req,res)=>{
     let data = await Excel.generateExcel(PORT);
     let downloadUrl = data.fileDonwload
     let filePath = data.filePath
-    res.json({
+    let response = {
         success: true,
         message: 'Excel generado con streams',
         downloadUrl,
         filePath,
         size: `${(fs.statSync(data.filePath).size / (1024 * 1024)).toFixed(2)} MB`
-      });
+    };
+    console.log("response", response)
+    res.json(response);
 })
 
 app.listen(PORT, '0.0.0.0', () => {

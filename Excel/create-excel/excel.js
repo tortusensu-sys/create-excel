@@ -14,13 +14,11 @@ let data = {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
-// const file = path.join(__dirname, "../reportes")
-const DOMINIO = "http://sub06131335080.latamreadydb.oraclevcn.com"
 
 const generate = () =>{
     let body = JSON.parse(data.transactions);
     
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 500000; i++) {
     // for (let i = 0; i < 50; i++) {
         body.push(body[0])
     }
