@@ -33,7 +33,6 @@ app.post("/api/create-excel", async (req,res)=>{
       });
 })
 
-app.listen(PORT, async()=>{
-    // console.log( await Excel.generateExcel())
-    console.log(`este es el ejemplo de  ${PORT}`)
-})
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor activo en http://0.0.0.0:${PORT}`);
+  });
