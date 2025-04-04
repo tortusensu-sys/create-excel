@@ -9,7 +9,14 @@ const app = express();
 app.use(express.json());
 
 app.get("/", async(req, res)=>{
-    res.status(200).send("Holla mi kinggg")
+    try {
+        console.log("todo correcto")
+        res.status(200).send("Holla mi kinggg")
+        
+    } catch (error) {
+        console.log("error", error)
+        console.log("error stack", error.stack)
+    }
 })
 
 app.post("/api/create-excel", async (req,res)=>{
