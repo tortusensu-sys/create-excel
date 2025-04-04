@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename)
 const generate = () =>{
     let body = JSON.parse(data.transactions);
     
-    for (let i = 0; i < 500000; i++) {
+    for (let i = 0; i < 1000000; i++) {
     // for (let i = 0; i < 50; i++) {
         body.push(body[0])
     }
