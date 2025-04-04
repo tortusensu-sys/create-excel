@@ -15,6 +15,7 @@ let data = {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 // const file = path.join(__dirname, "../reportes")
+const DOMINIO = "http://sub06131335080.latamreadydb.oraclevcn.com"
 
 const generate = () =>{
     let body = JSON.parse(data.transactions);
@@ -75,7 +76,7 @@ const generateExcel = async(port)=>{
     return {
         "fileName": fileName,
         "filePath": filePath,
-        "fileDonwload": `/api/download/${fileName}`
+        "fileDonwload": `${DOMINIO}/api/download/${fileName}`
     }
 }
 
