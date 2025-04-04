@@ -1,10 +1,14 @@
 import express from 'express';
 import Excel from "./create-excel/excel.js"
 import fs from "fs";
+import path from "path";
 
 const PORT = 3008;
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename)
 
 app.use(express.json());
 
@@ -12,6 +16,18 @@ app.get("/", async(req, res)=>{
     try {
         console.log("todo correcto")
         res.status(200).send("Holla mi kinggg")
+        
+    } catch (error) {
+        console.log("error", error)
+        console.log("error stack", error.stack)
+    }
+})
+
+app.get("/api/download/:fileName", async(req, res)=>{
+    try {
+        let url = path.join(__dirname, "tmp", req.params.fileName)
+        console.log("todo correcto")
+        res.status(200).download(url)
         
     } catch (error) {
         console.log("error", error)

@@ -58,17 +58,6 @@ const generateExcel = async(port)=>{
     sheet.addRow(header).commit();
     let body = generate();
     await generateData(body, sheet)
-    // let i = 1;
-    // body.forEach(async(tra)=>{
-    //     let arrayTmp = []
-    //     tra.forEach(e=>{
-    //         arrayTmp.push(e.value)
-    //     })
-    //     sheet.addRow(arrayTmp).commit()
-    //     if (i % 10000 === 0) await new Promise(resolve => setImmediate(resolve));
-    //     console.log(`Procesadas ${i} filas...`);
-    //     i++
-    // }) 
     
     await workbook.commit();
     fileStram.end();
@@ -76,7 +65,7 @@ const generateExcel = async(port)=>{
     return {
         "fileName": fileName,
         "filePath": filePath,
-        "fileDonwload": `${DOMINIO}/api/download/${fileName}`
+        "fileDonwload": `/api/download/${fileName}`
     }
 }
 
