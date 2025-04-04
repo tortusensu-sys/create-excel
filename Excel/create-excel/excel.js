@@ -27,16 +27,35 @@ const generate = () =>{
 }
 
 const generateData = async(body, sheet)=>{
-    let i = 1;
-    for (const element of body) {
-        let arrayTmp = element.map(e => e.value);
+    let size = 50000;
+    let progress = 0;
+    const TOTAL_ROWS = body.length; 
+    while (progress < TOTAL_ROWS) {
+        let batch = body.slice(progress, progress + size);
 
-        sheet.addRow(arrayTmp).commit();
+        batch.forEach(element=>{
+            let arrayTmp = element.map(e => e.value);
+            
+            sheet.addRow(arrayTmp).commit();
 
-        console.log(`Procesadas ${i} filas...`);
-        if (i % 10000 === 0) await new Promise(resolve => setImmediate(resolve));
-        i++;
+            progress++;
+        });
+
+        if (progress % 100000 === 0 || progress === TOTAL_ROWS) {
+            console.log(`Procesadas ${progress}/${TOTAL_ROWS} filas`);
+            await new Promise(resolve => setImmediate(resolve));
+        }
     }
+    // let i = 1;
+    // for (const element of body) {
+    //     let arrayTmp = element.map(e => e.value);
+
+    //     sheet.addRow(arrayTmp).commit();
+
+    //     console.log(`Procesadas ${i} filas...`);
+    //     if (i % 10000 === 0) await new Promise(resolve => setImmediate(resolve));
+    //     i++;
+    // }
 }
 
 const generateExcel = async(port)=>{
