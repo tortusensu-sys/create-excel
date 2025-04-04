@@ -9,13 +9,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", async(req, res)=>{
-    let data = await Excel.generateExcel(PORT);
-    res.download(data.filePath, data.fileName, (err)=>{
-        if (err) {
-            console.log("Ocurrio un error", err)
-        }
-        fs.unlink(data.filePath, ()=>{})
-    });
+    res.status(200).send("Holla mi kinggg")
 })
 
 app.post("/api/create-excel", async (req,res)=>{
