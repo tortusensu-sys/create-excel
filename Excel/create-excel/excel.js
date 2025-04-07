@@ -113,7 +113,8 @@ const generateExcel = async(port, body)=>{
     })
 
     rowHeaders.commit();
-    let dataBody = generate(body.transactions);
+    // let dataBody = generate(body.transactions);
+    let dataBody = body.transactions;
     await insertRows(dataBody, sheet)
     
     await workbook.commit();
