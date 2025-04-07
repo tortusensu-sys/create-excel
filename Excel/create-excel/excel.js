@@ -79,6 +79,7 @@ const insertRows = async(body, sheet)=>{
 }
 
 const generateExcel = async(port, body)=>{
+    console.log("Iniciando la generación del Excel ......")
     let date = new Date();
     const fileName = `Reporte${date.getMilliseconds()}.xlsx`;
     const filePath = path.join(__dirname, "../reportes", fileName);
@@ -117,7 +118,7 @@ const generateExcel = async(port, body)=>{
     
     await workbook.commit();
     fileStram.end();
-
+    console.log("Terminando la creación del excel ........")
     return {
         "fileName": fileName,
         "filePath": filePath,

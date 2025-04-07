@@ -37,6 +37,7 @@ app.get("/api/download/:fileName", async(req, res)=>{
 })
 
 app.post("/api/create-excel", async (req,res)=>{
+    console.log("Estoy usando entrando en el body.")
     req.setTimeout(300000)
     let body = req.body;
     let data = await Excel.generateExcel(PORT, body);
