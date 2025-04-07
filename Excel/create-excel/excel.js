@@ -34,7 +34,7 @@ const title = (sheet, body)=>{
 const generate = (transaction) =>{
     let body = JSON.parse(transaction);
     
-    for (let i = 0; i < 1000000; i++) {
+    for (let i = 0; i < 500000; i++) {
     // for (let i = 0; i < 50; i++) {
         body.push(body[0])
     }
