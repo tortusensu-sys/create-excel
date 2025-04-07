@@ -1,9 +1,8 @@
 import express from 'express';
-// import bodyParse from 'body-parse';s
 import Excel from "./create-excel/excel.js"
 import fs, { copyFileSync } from "fs";
 import path from "path";
-import {fileURLToPath } from "url";
+import { fileURLToPath } from "url";
 
 const PORT = 3008;
 
@@ -12,13 +11,18 @@ app.use(express.json({ limit: '50mb' }));
 
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// app.use(bodyParse.json({ limit: '50mb' }));
-// app.use(bodyParse.urlencoded({ limit: '50mb', extended: true }));
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 
 app.use(express.json());
+
+
+const eliminatePath = (path, time)=>{
+    setTimeout(()=>{
+        fs.unlinkSync(`./reportes/${path}`);
+    }, time)
+    
+}
 
 app.get("/", async(req, res)=>{
     try {
@@ -40,27 +44,36 @@ app.get("/api/download/:fileName", async(req, res)=>{
     } catch (error) {
         console.log("error", error)
         console.log("error stack", error.stack)
+        res.status(200).send("Archivo no encontrado, recuerde que el archivo se eliminara automaticamente ddespues de 24 horas.")
     }
 })
 
 app.post("/api/create-excel", async (req,res)=>{
-    console.log("Estoy usando entrando en el body.")
-    req.setTimeout(300000)
-    let body = req.body;
-    let data = await Excel.generateExcel(PORT, body);
-    let downloadUrl = data.fileDonwload
-    let filePath = data.filePath
-    let response = {
-        success: true,
-        message: 'Excel generado correctamente',
-        downloadUrl,
-        filePath,
-        size: `${(fs.statSync(data.filePath).size / (1024 * 1024)).toFixed(2)} MB`
-    };
-    console.log("response", response)
-    res.json(response);
+    try {
+        console.log("Estoy usando entrando en el body.")
+        req.setTimeout(300000)
+        let body = req.body;
+        let data = await Excel.generateExcel(PORT, body);
+        let downloadUrl = data.fileDonwload
+        let filePath = data.filePath
+        
+        let response = {
+            success: true,
+            message: 'Excel generado correctamente',
+            downloadUrl,
+            filePath,
+            size: `${(fs.statSync(data.filePath).size / (1024 * 1024)).toFixed(2)} MB`
+        };
+        console.log("response", response)
+        res.json(response);
+        
+        // eliminatePath(data.fileName, 1440 * 1000);
+        eliminatePath(data.fileName, 50 * 1000);
+    } catch (error) {
+        req.status(500).send(error.stack)
+    }
 })
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor activo en http://0.0.0.0:${PORT}`);
+    console.log(`Servidor activo en http://149.130.162.8:${PORT}`);
   });
