@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParse from 'body-parse';
 import Excel from "./create-excel/excel.js"
 import fs, { copyFileSync } from "fs";
 import path from "path";
@@ -7,6 +8,9 @@ import {fileURLToPath } from "url";
 const PORT = 3008;
 
 const app = express();
+
+app.use(bodyParse.json({ limit: '50mb' }));
+app.use(bodyParse.urlencoded({ limit: '50mb', extended: true }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
