@@ -123,7 +123,7 @@ const generateExcel = async(port, body)=>{
     return {
         "fileName": fileName,
         "filePath": filePath,
-        "fileDonwload": `/api/download/${fileName}`
+        "fileDonwload": `http://149.130.162.8:3008/api/download/${fileName}`
     }
 }
 
