@@ -7,9 +7,9 @@ import { fileURLToPath } from "url";
 const PORT = 3008;
 
 const app = express();
-app.use(express.json({ limit: '100mb' }));
+app.use(express.json({ limit: '1000mb' }));
 
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.urlencoded({ limit: '1000mb', extended: true }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
