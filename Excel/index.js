@@ -75,21 +75,22 @@ app.post("/api/create-excel", async (req,res)=>{
             dataArray.push(body);
             console.log(body.length)
             res.status(200).send(dataArray.length)
-            // let data = await Excel.generateExcel(PORT, body);
-            // let downloadUrl = data.fileDonwload
-            // let filePath = data.filePath
+            let data = await Excel.generateExcel(PORT, dataArray);
+            let downloadUrl = data.fileDonwload
+            let filePath = data.filePath
             
-            // let response = {
-            //     success: true,
-            //     message: 'Excel generado correctamente, recuerda que la descarga se eliminara 24 h de su creación',
-            //     downloadUrl,
-            //     filePath,
-            //     size: `${(fs.statSync(data.filePath).size / (1024 * 1024)).toFixed(2)} MB`
-            // };
-            // console.log("response", response)
-            // res.status(200).json(response);
+            let response = {
+                success: true,
+                message: 'Excel generado correctamente, recuerda que la descarga se eliminara 24 h de su creación',
+                downloadUrl,
+                filePath,
+                size: `${(fs.statSync(data.filePath).size / (1024 * 1024)).toFixed(2)} MB`
+            };
+            console.log("response", response)
+            res.status(200).json(response);
             
-            // eliminatePath(data.fileName, 86400 * 1000);
+            eliminatePath(data.fileName, 86400 * 1000);
+            dataArray = [];
             
         }else{
             dataArray.push(body);

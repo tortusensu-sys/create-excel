@@ -91,8 +91,8 @@ const generateExcel = async(port, body)=>{
     })
     
     const sheet = workbook.addWorksheet("Mi Excel");
-    title(sheet, body)
-    let header = JSON.parse(body.headers)
+    title(sheet, body[0][0])
+    let header = JSON.parse(body[0][0].headers)
     let rowHeaders = sheet.addRow(header);
     let headerStyle = { 
         border: {
@@ -114,8 +114,14 @@ const generateExcel = async(port, body)=>{
 
     rowHeaders.commit();
     // let dataBody = generate(body.transactions);
-    let dataBody = body.transactions;
-    await insertRows(JSON.parse(dataBody), sheet)
+    let dataBody = [];
+    body.forEach(iteration=>{
+        iteration.forEach(transacction =>{
+            dataBody = dataBody.concat(JSON.parse(transacction.transactions))
+        })
+    })
+    // let dataBody = body.transactions;
+    await insertRows(dataBody, sheet)
     
     await workbook.commit();
     fileStram.end();
