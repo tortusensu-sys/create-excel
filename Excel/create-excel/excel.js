@@ -119,9 +119,11 @@ const generateExcel = async(port, body)=>{
     // let dataBody = generate(body.transactions);
     let dataBody = [];
     body.forEach(iteration=>{
-        iteration.forEach(transacction =>{
-            dataBody = dataBody.concat(JSON.parse(transacction.transactions))
-        })
+        
+        dataBody = dataBody.concat(JSON.parse(iteration.transactions))
+        // iteration.forEach(transacction =>{
+        //     dataBody = dataBody.concat(JSON.parse(transacction.transactions))
+        // })
     })
     // let dataBody = body.transactions;
     await insertRows(dataBody, sheet)
