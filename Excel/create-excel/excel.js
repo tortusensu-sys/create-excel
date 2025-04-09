@@ -91,6 +91,9 @@ const generateExcel = async(port, body)=>{
     })
     
     const sheet = workbook.addWorksheet("Mi Excel");
+    console.log("body",body)
+    console.log("body[0]",body[0])
+    console.log("body[0][0]",body[0][0])
     title(sheet, body[0][0])
     let header = JSON.parse(body[0][0].headers)
     let rowHeaders = sheet.addRow(header);

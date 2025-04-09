@@ -73,7 +73,7 @@ app.post("/api/create-excel", async (req,res)=>{
         let body = req.body;
         if (body.sumCount === body.count) {
             dataArray.push(body);
-            console.log(body.length)
+            console.log("cuantos parametros tiene",dataArray.length)
             // res.status(200).send(dataArray.length)
             let data = await Excel.generateExcel(PORT, dataArray);
             let downloadUrl = data.fileDonwload
@@ -100,6 +100,8 @@ app.post("/api/create-excel", async (req,res)=>{
         }
         // eliminatePath(data.fileName, 50 * 1000);
     } catch (error) {
+        console.log("error", error)
+        console.log("error stack ", error.stack)
         res.status(500).send(error.stack)
     }
 })
