@@ -78,8 +78,9 @@ const insertRows = async(body, sheet)=>{
     }
 }
 
-const generateExcel = async(port, body)=>{
-    console.log("Iniciando la generación del Excel ......")
+const generateExcel = async(port, count)=>{
+    console.log("Iniciando la generación del Excel ......");
+    let testinHeader = JSON.parse(fs.readFileSync(__dirname, `../tmp/file1.json`))
     let date = new Date();
     const fileName = `Reporte${date.getMilliseconds()}.xlsx`;
     const filePath = path.join(__dirname, "../reportes", fileName);
@@ -91,11 +92,8 @@ const generateExcel = async(port, body)=>{
     })
     
     const sheet = workbook.addWorksheet("Mi Excel");
-    // console.log("body",body)
-    // console.log("body[0]",body[0])
-    // console.log("body[0][0]",body[0][0])
-    title(sheet, body[0])
-    let header = JSON.parse(body[0].headers)
+    title(sheet, testinHeader)
+    let header = JSON.parse(testinHeader.headers)
     let rowHeaders = sheet.addRow(header);
     let headerStyle = { 
         border: {
@@ -118,13 +116,15 @@ const generateExcel = async(port, body)=>{
     rowHeaders.commit();
     // let dataBody = generate(body.transactions);
     let dataBody = [];
-    body.forEach(iteration=>{
-        
-        dataBody = dataBody.concat(JSON.parse(iteration.transactions))
-        // iteration.forEach(transacction =>{
-        //     dataBody = dataBody.concat(JSON.parse(transacction.transactions))
-        // })
-    })
+    for (let i = 1; i <= count; i++) {
+        let data = fs.readFileSync(__dirname, `../tmp/file${i}.json`)
+        dataBody = dataBody.concat(JSON.parse(data.transactions))
+        console.log("numero de data que se esta obteniendo " + i)
+    }
+    // body.forEach(iteration=>{
+    //     let data = JSON.parse(fs.readFileSync(__dirname, `../tmp/file${}.json`))
+    //     dataBody = dataBody.concat(JSON.parse(iteration.transactions))
+    // })
     // let dataBody = body.transactions;
     await insertRows(dataBody, sheet)
     

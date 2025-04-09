@@ -66,16 +66,18 @@ app.post("/api/prueba", async(req, res)=>{
         res.status(400).send(error.stack)
     }
 })
+
 app.post("/api/create-excel", async (req,res)=>{
     try {
         console.log("Estoy usando entrando en el body.")
         req.setTimeout(300000)
         let body = req.body;
         if (body.sumCount === body.count) {
-            dataArray.push(body);
-            console.log("cuantos parametros tiene",dataArray.length)
+            // dataArray.push(body);
+            fs.writeFileSync(path.join(__dirname, `./tmp/file${body.sumCount}.json`), JSON.stringify(body))
+            console.log("sumaaaaaa",body.sumCount)
             // res.status(200).send(dataArray.length)
-            let data = await Excel.generateExcel(PORT, dataArray);
+            let data = await Excel.generateExcel(PORT, body.count);
             let downloadUrl = data.fileDonwload
             let filePath = data.filePath
             
@@ -90,12 +92,10 @@ app.post("/api/create-excel", async (req,res)=>{
             res.status(200).json(response);
             
             eliminatePath(data.fileName, 86400 * 1000);
-            dataArray = [];
             
         }else{
-            dataArray.push(body);
-            console.log("estoy en el else");
-            console.log("length de la data", dataArray.length)
+            console.log("sumaaaaaa",body.sumCount)
+            fs.writeFileSync(path.join(__dirname, `./tmp/file${body.sumCount}.json`), JSON.stringify(body));
             res.status(200).send("La data se esta cargando")
         }
         // eliminatePath(data.fileName, 50 * 1000);
