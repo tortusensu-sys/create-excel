@@ -80,7 +80,7 @@ const insertRows = async(body, sheet)=>{
 
 const generateExcel = async(port, count)=>{
     console.log("Iniciando la generación del Excel ......");
-    let testinHeader = JSON.parse(fs.readFileSync(__dirname, `../tmp/file1.json`))
+    let testinHeader = JSON.parse(fs.readFileSync(path.join(__dirname, `../tmp/file1.json`)))
     let date = new Date();
     const fileName = `Reporte${date.getMilliseconds()}.xlsx`;
     const filePath = path.join(__dirname, "../reportes", fileName);
@@ -117,7 +117,7 @@ const generateExcel = async(port, count)=>{
     // let dataBody = generate(body.transactions);
     let dataBody = [];
     for (let i = 1; i <= count; i++) {
-        let data = fs.readFileSync(__dirname, `../tmp/file${i}.json`)
+        let data = fs.readFileSync(path.join(__dirname, `../tmp/file${i}.json`))
         dataBody = dataBody.concat(JSON.parse(data.transactions))
         console.log("numero de data que se esta obteniendo " + i)
     }
