@@ -71,7 +71,7 @@ app.post("/api/create-excel", async (req,res)=>{
         console.log("Estoy usando entrando en el body.")
         req.setTimeout(300000)
         let body = req.body;
-        if (body.count == body.count) {
+        if (body.sumCount === body.count) {
             dataArray.push(body);
             console.log(body.length)
             res.status(200).send(dataArray.length)
@@ -93,6 +93,8 @@ app.post("/api/create-excel", async (req,res)=>{
             
         }else{
             dataArray.push(body);
+            console.log("estoy en el else");
+            console.log("length de la data", dataArray.length)
             res.status(200).send("La data se esta cargando")
         }
         // eliminatePath(data.fileName, 50 * 1000);
