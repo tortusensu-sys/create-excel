@@ -73,6 +73,7 @@ app.post("/api/create-excel", async (req,res)=>{
         let body = req.body;
         if (body.count == body.count) {
             dataArray.push(body);
+            console.log(body.length)
             res.status(200).send(dataArray.length)
             // let data = await Excel.generateExcel(PORT, body);
             // let downloadUrl = data.fileDonwload
