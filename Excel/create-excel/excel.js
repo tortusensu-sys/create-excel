@@ -63,6 +63,7 @@ const insertRows = async(body, sheet)=>{
     console.log("total", TOTAL_ROWS) 
     while (progress < TOTAL_ROWS) {
         let batch = body.slice(progress, progress + size);
+        console.log("batch", batch)
         batch.forEach(element=>{
             let arrayTmp = element.map(e => e.value);
             
@@ -114,18 +115,12 @@ const generateExcel = async(port, count)=>{
     })
 
     rowHeaders.commit();
-    // let dataBody = generate(body.transactions);
     let dataBody = [];
     for (let i = 1; i <= count; i++) {
-        let data = fs.readFileSync(path.join(__dirname, `../tmp/file${i}.json`))
-        dataBody = dataBody.concat(JSON.parse(data.transactions))
+        let data = fs.readFileSync(path.join(__dirname, `../tmp/file${i}.json`), "utf8")
+        dataBody = dataBody.concat(JSON.parse(JSON.parse(data).transactions))
         console.log("numero de data que se esta obteniendo " + i)
     }
-    // body.forEach(iteration=>{
-    //     let data = JSON.parse(fs.readFileSync(__dirname, `../tmp/file${}.json`))
-    //     dataBody = dataBody.concat(JSON.parse(iteration.transactions))
-    // })
-    // let dataBody = body.transactions;
     await insertRows(dataBody, sheet)
     
     await workbook.commit();
