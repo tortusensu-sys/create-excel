@@ -5,8 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec \"node --max-old-space-size=3048\" index.js",
-    "start": "pm2 start index.js --node-args=\"--max-old-space-size=3048\""
+    "dev": "nodemon --exec \"node --max-old-space-size=2048\" index.js",
+    "start": "pm2 start index.js --node-args=\"--max-old-space-size=2048\""
   },
   "author": "",
   "license": "ISC",
