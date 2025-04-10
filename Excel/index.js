@@ -1,9 +1,8 @@
 import express from 'express';
 import Excel from "./create-excel/excel.js"
-import fs, { copyFileSync } from "fs";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { error } from 'console';
 
 const PORT = 3008;
 
@@ -74,7 +73,7 @@ app.post("/api/create-excel", async (req, res) => {
         req.setTimeout(300000)
         let body = req.body;
         let filePath = path.join(__dirname, `./tmp/file${body.sumCount}.json`);
-        let jsonData = JSON.stringify(filePath);
+        let jsonData = JSON.stringify(body);
         const writeStream = fs.createWriteStream(filePath);
         writeStream.write(jsonData);
         writeStream.end();

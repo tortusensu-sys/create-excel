@@ -1,7 +1,9 @@
 import Exceljs from "exceljs";
 import fs from "fs/promises";
+import fsStream from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,12 +81,15 @@ const insertRows = async (body, sheet) => {
 const generateExcel = async (count) => {
     console.log("Iniciando la generación del Excel ......");
     let testinHeader = JSON.parse(
-        await fs.readFile(path.join(__dirname, `../tmp/file1.json`))
+        await fs.readFile(path.join(__dirname, `../tmp/file1.json`), "utf8")
     );
+
+    
+    console.log("testinHeader", testinHeader)
     let date = new Date();
     const fileName = `Reporte${date.getMilliseconds()}.xlsx`;
     const filePath = path.join(__dirname, "../reportes", fileName);
-    const fileStram = fs.createWriteStream(filePath);
+    const fileStram = fsStream.createWriteStream(filePath);
     const workbook = new Exceljs.stream.xlsx.WorkbookWriter({
         stream: fileStram,
         useSharedStrings: false,
