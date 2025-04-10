@@ -63,7 +63,6 @@ const insertRows = async(body, sheet)=>{
     console.log("total", TOTAL_ROWS) 
     while (progress < TOTAL_ROWS) {
         let batch = body.slice(progress, progress + size);
-        console.log("batch", batch)
         batch.forEach(element=>{
             let arrayTmp = element.map(e => e.value);
             
