@@ -4,6 +4,7 @@ import fsStream from "fs";
 import * as JSONStream from 'jsonstream';
 import path, { parse } from "path";
 import { fileURLToPath } from "url";
+import { Transform  } from "stream";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -68,31 +69,61 @@ const insertRows = async (body, sheet) => {
     console.log("Termino insertar filas ...........")
 };
 
-const processLargeFile = async (filePath, transactions) => {
-    console.log("Iniciando proceso ........");
-    const fileStream = fsStream.createReadStream(filePath, { encoding: 'utf8' });
+// const processLargeFile = async (filePath, transactions) => {
+//     console.log("Iniciando proceso ........");
+//     const fileStream = fsStream.createReadStream(filePath, { encoding: 'utf8' });
 
-    const parser = JSONStream.parse('transactions');
+//     const parser = JSONStream.parse('transactions');
 
-    fileStream.pipe(parser);
-    parser.on('data', (chunk) => {
-        try {
-            transactions.push(...JSON.parse(chunk)); 
-        } catch (err) {
-            console.error("Error al parsear:", err);
-        }
-    });
+//     fileStream.pipe(parser);
+//     parser.on('data', (chunk) => {
+//         try {
+//             transactions.push(...JSON.parse(chunk)); 
+//         } catch (err) {
+//             console.error("Error al parsear:", err);
+//         }
+//     });
 
+//     return new Promise((resolve, reject) => {
+//         parser.on('end', () => {
+//             console.log("Procesamiento completado");
+//             resolve();
+//         });
+
+//         parser.on('error', (err) => {
+//             console.error("Error en el parser:", err);
+//             reject(err);
+//         });
+//     });
+// };
+
+const processLargeFile = (filePath, data) => {
     return new Promise((resolve, reject) => {
-        parser.on('end', () => {
-            console.log("Procesamiento completado");
-            resolve();
+        const fileStream = fsStream.createReadStream(filePath, { encoding: 'utf8' });
+        
+        const parser = JSONStream.parse('transactions');
+        
+        const transformer = new Transform({
+            objectMode: true,
+            transform(chunk, encoding, callback) {
+                try {
+                    const parsedTransactions = JSON.parse(chunk);
+                    // console.log("parsedTransactions", parsedTransactions)
+                    data.push(...parsedTransactions);
+                    callback();
+                } catch (err) {
+                    callback(err);
+                }
+            }
         });
 
-        parser.on('error', (err) => {
-            console.error("Error en el parser:", err);
-            reject(err);
-        });
+        fileStream
+            .pipe(parser)
+            .pipe(transformer)
+            .on('finish', () => {
+                resolve(data);
+            })
+            .on('error', reject);
     });
 };
 
@@ -140,14 +171,16 @@ const generateExcel = async (count) => {
         let dataBody = [];
         for (let i = 1; i <= count; i++) {
             let pathtemp = path.resolve(__dirname, `../tmp/file${i}.json`)
-            console.log(i)
             try {
                 await processLargeFile(pathtemp, dataBody);
+                
             } catch (err) {
                 console.error("Error:", err.message);
             }
+            console.log("conteo "+ i)
         }
         await Promise.all(dataBody)
+        console.log("dataBody lenhgth", dataBody.length)
         await insertRows(dataBody, sheet);
         await workbook.commit();
         fileStram.end();
