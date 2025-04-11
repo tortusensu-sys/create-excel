@@ -1,6 +1,7 @@
 import express from 'express';
 import Excel from "./create-excel/excel.js"
 import fs from "fs";
+import fsPromise from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -15,7 +16,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 let testingArray = [];
 
-let dataArray = [];
 app.use(express.json());
 
 
@@ -23,8 +23,21 @@ const eliminatePath = (path, time) => {
     setTimeout(() => {
         fs.unlinkSync(`./reportes/${path}`);
     }, time)
-
 }
+
+const eliminatePathJson = async (time, count) => {
+    console.log(`Iniciando eliminación de ${count} archivos`);
+    for (let i = 1; i <= count; i++) { 
+        try {
+            console.log(`Procesando archivo ${i}`);
+            await fsPromise.unlink(`./tmp/file${i}.json`);
+            console.log(`Archivo ${i} eliminado correctamente`);
+        } catch (err) {
+            console.error(`Error con archivo ${i}:`, err.message);
+        }
+    }
+    console.log('Proceso de eliminación completado');
+};
 
 app.get("/", async (req, res) => {
     try {
@@ -94,7 +107,8 @@ app.post("/api/create-excel", async (req, res) => {
                 };
                 console.log("response", response)
                 res.status(200).json(response);
-
+                console.log("paso el res")
+                await eliminatePathJson(10, body.count)
                 eliminatePath(data.fileName, 86400 * 1000);
 
             } else {
