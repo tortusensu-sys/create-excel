@@ -146,6 +146,7 @@ const generateExcel = async (count) => {
         const sheet = workbook.addWorksheet("Mi Excel");
 
         //Comienzo hacer mi cabecera
+        console.log("Comenzando la cabecera .............")
         title(sheet, testinHeader);
         let rowHeaders = sheet.addRow(JSON.parse(testinHeader.headers));
         let headerStyle = {
@@ -166,8 +167,11 @@ const generateExcel = async (count) => {
             cell.fill = headerStyle.fill;
         });
         rowHeaders.commit();
+        console.log("Terminando la cabecera .............")
 
         //comienzo a construir mi cuerpo 
+        
+        console.log("Comenzando la cuerpo .............")
         let dataBody = [];
         for (let i = 1; i <= count; i++) {
             let pathtemp = path.resolve(__dirname, `../tmp/file${i}.json`)
@@ -184,6 +188,8 @@ const generateExcel = async (count) => {
         await insertRows(dataBody, sheet);
         await workbook.commit();
         fileStram.end();
+        
+        console.log("Terminando la cuerpo .............")
         return {
             fileName: fileName,
             filePath: filePath,
