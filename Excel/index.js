@@ -108,7 +108,7 @@ app.post("/api/create-excel", async (req, res) => {
                 console.log("response", response)
                 res.status(200).json(response);
                 console.log("paso el res")
-                // await eliminatePathJson(10, body.count)
+                await eliminatePathJson(10, body.count)
                 eliminatePath(data.fileName, 86400 * 1000);
 
             } else {
