@@ -111,18 +111,15 @@ const processLargeFile = (filePath, data) => {
             transform(chunk, encoding, callback) {
                 try {
                     const parsedTransactions = JSON.parse(chunk);
-                    // console.log("parsedTransactions", parsedTransactions)
                     parsedTransactions.forEach(transaction => {
-                        data.push(transaction);
+                        data.push(...transaction);
                         transactionCount++;
                         
-                        // Procesa por lotes para liberar memoria
                         if (data.length >= BATCH_SIZE) {
                             this.push(data.slice());
                             data.length = 0;
                         }
                     });
-                    // data.push(...parsedTransactions);
                     callback();
                 } catch (err) {
                     callback(err);
