@@ -99,7 +99,10 @@ const insertRows = async (body, sheet) => {
 
 const processLargeFile = (filePath, data) => {
     return new Promise((resolve, reject) => {
-        const fileStream = fsStream.createReadStream(filePath, { encoding: 'utf8' });
+        
+        let transactionCount = 0;
+        const BATCH_SIZE = 500;
+        const fileStream = fsStream.createReadStream(filePath, { encoding: 'utf8', highWaterMark: 1024 * 1024 });
         
         const parser = JSONStream.parse('transactions');
         
@@ -109,21 +112,41 @@ const processLargeFile = (filePath, data) => {
                 try {
                     const parsedTransactions = JSON.parse(chunk);
                     // console.log("parsedTransactions", parsedTransactions)
-                    data.push(...parsedTransactions);
+                    parsedTransactions.forEach(transaction => {
+                        data.push(transaction);
+                        transactionCount++;
+                        
+                        // Procesa por lotes para liberar memoria
+                        if (data.length >= BATCH_SIZE) {
+                            this.push(data.slice());
+                            data.length = 0;
+                        }
+                    });
+                    // data.push(...parsedTransactions);
                     callback();
                 } catch (err) {
                     callback(err);
                 }
+            },
+            flush(callback) {
+                // Procesa las transacciones restantes
+                if (data.length > 0) {
+                    this.push(data.slice());
+                }
+                console.log(`Archivo ${filePath} procesado. Total transacciones: ${transactionCount}`);
+                callback();
             }
         });
 
         fileStream
-            .pipe(parser)
-            .pipe(transformer)
-            .on('finish', () => {
-                resolve(data);
-            })
-            .on('error', reject);
+        .pipe(parser)
+        .pipe(transformer)
+        .on('data', (batch) => {
+            console.log(`Procesando lote de ${batch.length} transacciones`);
+            batch.length = 0;
+        })
+        .on('finish', resolve)
+        .on('error', reject);
     });
 };
 
