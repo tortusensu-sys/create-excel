@@ -1,16 +1,15 @@
 import Exceljs from "exceljs";
 import fs from "fs/promises";
 import fsStream from "fs";
-import path from "path";
+import * as JSONStream from 'jsonstream';
+import path, { parse } from "path";
 import { fileURLToPath } from "url";
 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const title = (sheet, body) => {
-    let title = JSON.parse(body.rptWords);
-    let dataTitle = Object.values(title);
+    let dataTitle = Object.values(JSON.parse(body.rptWords));
     sheet.getCell("B2").value = dataTitle[0];
     sheet.getCell("B2").style = {
         font: {
@@ -30,16 +29,6 @@ const title = (sheet, body) => {
             },
         };
     }
-};
-
-const generate = (transaction) => {
-    let body = JSON.parse(transaction);
-
-    for (let i = 0; i < 500000; i++) {
-        // for (let i = 0; i < 50; i++) {
-        body.push(body[0]);
-    }
-    return body;
 };
 
 const insertRows = async (body, sheet) => {
@@ -76,68 +65,100 @@ const insertRows = async (body, sheet) => {
             await new Promise((resolve) => setImmediate(resolve));
         }
     }
+    console.log("Termino insertar filas ...........")
+};
+
+const processLargeFile = async (filePath, transactions) => {
+    console.log("Iniciando proceso ........");
+    const fileStream = fsStream.createReadStream(filePath, { encoding: 'utf8' });
+
+    const parser = JSONStream.parse('transactions');
+
+    fileStream.pipe(parser);
+    parser.on('data', (chunk) => {
+        try {
+            transactions.push(...JSON.parse(chunk)); 
+        } catch (err) {
+            console.error("Error al parsear:", err);
+        }
+    });
+
+    return new Promise((resolve, reject) => {
+        parser.on('end', () => {
+            console.log("Procesamiento completado");
+            resolve();
+        });
+
+        parser.on('error', (err) => {
+            console.error("Error en el parser:", err);
+            reject(err);
+        });
+    });
 };
 
 const generateExcel = async (count) => {
-    console.log("Iniciando la generación del Excel ......");
-    let testinHeader = JSON.parse(
-        await fs.readFile(path.join(__dirname, `../tmp/file1.json`), "utf8")
-    );
-
-    
-    console.log("testinHeader", testinHeader)
-    let date = new Date();
-    const fileName = `Reporte${date.getMilliseconds()}.xlsx`;
-    const filePath = path.join(__dirname, "../reportes", fileName);
-    const fileStram = fsStream.createWriteStream(filePath);
-    const workbook = new Exceljs.stream.xlsx.WorkbookWriter({
-        stream: fileStram,
-        useSharedStrings: false,
-        useStyles: true,
-    });
-
-    const sheet = workbook.addWorksheet("Mi Excel");
-    title(sheet, testinHeader);
-    let header = JSON.parse(testinHeader.headers);
-    let rowHeaders = sheet.addRow(header);
-    let headerStyle = {
-        border: {
-            top: { style: "thin" },
-            left: { style: "thin" },
-            bottom: { style: "thin" },
-            right: { style: "thin" },
-        },
-        fill: {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "FFC8E6C9" },
-        },
-    };
-    rowHeaders.eachCell((cell) => {
-        cell.border = headerStyle.border;
-        cell.fill = headerStyle.fill;
-    });
-
-    rowHeaders.commit();
-    let dataBody = [];
-    for (let i = 1; i <= count; i++) {
-        let data = await fs.readFile(
-            path.join(__dirname, `../tmp/file${i}.json`),
-            "utf8"
+    try {
+        console.log("Iniciando la generación del Excel ......");
+        let testinHeader = JSON.parse(
+            await fs.readFile(path.join(__dirname, `../tmp/file1.json`), "utf8")
         );
-        dataBody = dataBody.concat(JSON.parse(JSON.parse(data).transactions));
-        console.log("numero de data que se esta obteniendo " + i);
-    }
-    await insertRows(dataBody, sheet);
+    
+        let date = new Date();
+        const fileName = `Reporte${date.getMilliseconds()}.xlsx`;
+        const filePath = path.join(__dirname, "../reportes", fileName);
+        const fileStram = fsStream.createWriteStream(filePath);
+        const workbook = new Exceljs.stream.xlsx.WorkbookWriter({
+            stream: fileStram,
+            useSharedStrings: false,
+            useStyles: true,
+        });
+        const sheet = workbook.addWorksheet("Mi Excel");
 
-    await workbook.commit();
-    fileStram.end();
-    console.log("Terminando la creación del excel ........");
-    return {
-        fileName: fileName,
-        filePath: filePath,
-        fileDonwload: `http://149.130.162.8:3008/api/download/${fileName}`,
-    };
+        //Comienzo hacer mi cabecera
+        title(sheet, testinHeader);
+        let rowHeaders = sheet.addRow(JSON.parse(testinHeader.headers));
+        let headerStyle = {
+            border: {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            },
+            fill: {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "FFC8E6C9" },
+            },
+        };
+        rowHeaders.eachCell((cell) => {
+            cell.border = headerStyle.border;
+            cell.fill = headerStyle.fill;
+        });
+        rowHeaders.commit();
+
+        //comienzo a construir mi cuerpo 
+        let dataBody = [];
+        for (let i = 1; i <= count; i++) {
+            let pathtemp = path.resolve(__dirname, `../tmp/file${i}.json`)
+            console.log(i)
+            try {
+                await processLargeFile(pathtemp, dataBody);
+            } catch (err) {
+                console.error("Error:", err.message);
+            }
+        }
+        await Promise.all(dataBody)
+        await insertRows(dataBody, sheet);
+        await workbook.commit();
+        fileStram.end();
+        return {
+            fileName: fileName,
+            filePath: filePath,
+            fileDonwload: `http://149.130.162.8:3008/api/download/${fileName}`,
+        };
+    } catch (error) {
+        console.log("Error", error)
+    }
 };
 
 export default { generateExcel };

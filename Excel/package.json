@@ -20,5 +20,8 @@
     "path": "^0.12.7",
     "pm2": "^6.0.5",
     "url": "^0.11.4"
+  },
+  "devDependencies": {
+    "@types/jsonstream": "^0.8.33"
   }
 }
