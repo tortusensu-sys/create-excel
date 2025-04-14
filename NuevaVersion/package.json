@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "dev": "nodemon --exec \"node --max-old-space-size=3048\" index.js",
-    "start": "pm2 start index.js --node-args=\"--max-old-space-size=3048\""
+    "dev": "nodemon --exec \"node --max-old-space-size=3048\" principal.js",
+    "start": "pm2 start principal.js --node-args=\"--max-old-space-size=3048\""
   },
   "type": "module",
   "dependencies": {
