@@ -116,7 +116,7 @@ const constructionExcel = async(body)=>{
             await new Promise(resolve => setImmediate(resolve));
         }
     }
-
+    console.log(`${body.progreso}/${body.total}`)
     console.log("Terminando el relleno de este chunk......")
 }
 
