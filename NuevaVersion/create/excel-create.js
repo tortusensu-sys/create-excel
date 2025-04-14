@@ -111,10 +111,10 @@ const constructionExcel = async(body)=>{
             progress++;
         });
 
-        // if (progress % 100000 === 0 || progress === TOTAL_ROWS) {
-        //     console.log(`Procesadas ${progress}/${TOTAL_ROWS} filas`);
-        //     await new Promise(resolve => setImmediate(resolve));
-        // }
+        if (progress % 100000 === 0 || progress === TOTAL_ROWS) {
+            console.log(`Procesadas ${progress}/${TOTAL_ROWS} filas`);
+            await new Promise(resolve => setImmediate(resolve));
+        }
     }
 
     console.log("Terminando el relleno de este chunk......")
