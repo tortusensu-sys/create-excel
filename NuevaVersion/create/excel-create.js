@@ -132,7 +132,7 @@ const endExcel = async()=>{
     return {
         "fileName": fileNameFinal,
         "filePath": filePath,
-        "fileDonwload": `http://149.130.162.8:3008/api/download/${fileName}`
+        "fileDonwload": `http://149.130.162.8:3008/api/download/${fileNameFinal}`
     }
 
 }
