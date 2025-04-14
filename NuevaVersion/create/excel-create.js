@@ -80,9 +80,10 @@ const initExcel = async(dataHeader) =>{
 
 }
 
-const constructionExcel = async(body)=>{
+const constructionExcel = async(bodyData)=>{
     console.log("Comenzando ingresar los valores............")
-    body = JSON.parse(body.data)
+    let body = JSON.parse(bodyData.data)
+    console.log(body)
     sheet.columns = sheet.columns.map(column => {
         return {
             ...column,
@@ -116,7 +117,7 @@ const constructionExcel = async(body)=>{
             await new Promise(resolve => setImmediate(resolve));
         }
     }
-    console.log(`${body.progreso}/${body.total}`)
+    console.log(`${bodyData.progreso}/${bodyData.total}`)
     console.log("Terminando el relleno de este chunk......")
 }
 
