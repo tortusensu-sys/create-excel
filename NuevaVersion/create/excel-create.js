@@ -83,7 +83,6 @@ const initExcel = async(dataHeader) =>{
 const constructionExcel = async(bodyData)=>{
     console.log("Comenzando ingresar los valores............")
     let body = JSON.parse(bodyData.data)
-    console.log(body)
     sheet.columns = sheet.columns.map(column => {
         return {
             ...column,
